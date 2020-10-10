@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Order Management System</title>
+  </head>
+<body>
+	<h1>Order Management System</h1>
+	<label for="warehouse_name">Enter warehouse name:</label>
+    <input type="text" id="warehouse_name" name="warehouse_name">
+    <input type="button" onclick="searchButtonClicked_ware()" value="Search Warehouse Name">
+    <button type="submit"  onClick="refreshPage()">Refresh Warehouse Table</button>
+    <br> 
+    <br>
+    <br>
+	<table id="warehouse_table" style="width:30%">
+	<thead>
+	<tr>
+	  <th>warehouse_id</th>
+	  <th>warehouse_name</th>
+	</tr>
+	</thead>
+	<tbody id="warehouse_table"></tbody>
+	</table> 
+   
+    <br> 
+    <br>
+    <br>
+   
+    <label for="item_name">Enter Item name:</label>
+    <input type="text" id="item_name" name="item_name">
+    <input type="button" onclick="searchButtonClicked_item()" value="Search Item Name">
+    <button type="submit"  onClick="refreshPage()">Refresh Warehouse Table</button>
+
+    <br> 
+    <br>
+    <br>
+    
+    <table id="item_table" style="width:30%">
+	<thead>
+	<tr>
+	  <th>item_id</th>
+	  <th>item_name</th>
+	</tr>
+	</thead>
+	<tbody id="item_table"></tbody>
+	</table>
+	
+	<br> 
+	
+	<br> 
+    <br>
+    <br>
+    
+    <p> <b> Based on your search, please enter the warehouse ID, item_id, quantity and type of request (order or delivery)
+    </b>
+    </p>
+    
+    <label for="warehouse_number">Enter warehouse ID:</label>
+    <input type="text" id="warehouse_number" name="warehouse_number">
+    <label for="item_id">Enter Item ID:</label>
+    <input type="text" id="item_id" name="item_id">
+    <label for="quantity">Enter quantity:</label>
+    <input type="number" name="quantity" id="quantity" /> 
+    <label for="order_delivery">Enter (order_delivery):</label>
+    <select name = "order_delivery" id="order_delivery">
+      <option value ="Order">Order</option>
+      <option value ="Delivery">Delivery</option>
+    </select>
+    <input type="button" onclick="searchButtonClicked()" value="Place Line Order/Delivery">
+    <p>
+        Order Status:
+        <strong id="msg"></strong>
+    </p>
+    
+    <button type="submit"  onClick="refreshPage()">Click to place new order</button>
+
+
+<script type="text/javascript">
+	async function getData(base_url, warehouse_number, item_id, quantity, order_delivery) {
+		const url = `${base_url}?warehouse_number=${warehouse_number}&item_id=${item_id}&quantity=${quantity}
+		&order_delivery=${order_delivery}`;
+		const response = await fetch(url, {
+			method: 'GET',
+			credentials: 'same-origin'
+		});
+		return response.json(); // Use .text() instead of .json() for an HttpResponse
+	}
+
+	function searchButtonClicked() {
+		const warehouse_number = document.getElementById("warehouse_number").value;
+		queryItem(warehouse_number);
+	}
+
+
+	function queryItem(warehouse_number) {
+		const item_id = document.getElementById("item_id").value;
+		const quantity = document.getElementById("quantity").value;
+		const order_delivery = document.getElementById("order_delivery").value;
+		const searchUrl = '/AppLine/search/';
+		getData(searchUrl, warehouse_number, item_id, quantity, order_delivery).then(data => {
+			document.getElementById("msg").innerHTML = data.msg;
+		});
+		};
+</script>
+
+<script type="text/javascript">
+	async function getData_ware(base_url, warehouse_name) {
+		const url = `${base_url}?warehouse_name=${warehouse_name}`;
+		const response = await fetch(url, {
+			method: 'GET',
+			credentials: 'same-origin'
+		});
+		return response.json(); // Use .text() instead of .json() for an HttpResponse
+	}
+
+	function searchButtonClicked_ware() {
+		const warehouse_name = document.getElementById("warehouse_name").value;
+		queryItem_ware(warehouse_name);
+	}
+
+
+	function queryItem_ware(warehouse_name) {
+		const searchUrl = '/AppLine/query1/';
+		getData_ware(searchUrl, warehouse_name).then(data => {
+		//document.getElementById("msg1").innerHTML = data.msg1;
+		loadTableData(data.msg1)
+		});
+		};
+		
+	function loadTableData(items) {
+    const table = document.getElementById("warehouse_table");
+    items.forEach( item => {
+      let row = table.insertRow();
+      let date = row.insertCell(0);
+      date.innerHTML = item[0];
+      let name = row.insertCell(1);
+      name.innerHTML = item[1];
+    });
+  }
+		
+		
+</script>
+
+
+<script type="text/javascript">
+	async function getData_item(base_url, item_name) {
+		const url = `${base_url}?item_name=${item_name}`;
+		const response = await fetch(url, {
+			method: 'GET',
+			credentials: 'same-origin'
+		});
+		return response.json(); // Use .text() instead of .json() for an HttpResponse
+	}
+
+	function searchButtonClicked_item() {
+		const item_name = document.getElementById("item_name").value;
+		queryItem_item(item_name);
+	}
+
+	function queryItem_item(item_name) {
+		const searchUrl = '/AppLine/query2/';
+		getData_item(searchUrl, item_name).then(data => {
+		loadTableData1(data.msg2)
+				//document.getElementById("msg2").innerHTML = data.msg2;
+		});
+		};
+		
+	function loadTableData1(items) {
+    const table = document.getElementById("item_table");
+    items.forEach( item => {
+      let row = table.insertRow();
+      let date = row.insertCell(0);
+      date.innerHTML = item[0];
+      let name = row.insertCell(1);
+      name.innerHTML = item[1];	
+	});
+  }
+      
+</script>
+
+
+<script>
+	function refreshPage(){
+    window.location.reload();
+} 
+</script>
+
+</body>
+
+<style>
+	
+	table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+
+}
+</style>
+
+
+</html>
